@@ -1,353 +1,251 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ficha de RPG</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de RPG Digital</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
       margin: 20px;
-      color: #333;
+      background-color: #f4f4f4;
     }
-
     .container {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      position: relative;
-    }
-
-    h1, h2 {
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 5px;
-    }
-
-    label {
-      display: block;
-      margin: 10px 0 5px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    input[type="file"] {
-      margin-bottom: 10px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .dom-container {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .dom {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       flex-wrap: wrap;
     }
-
-    .dom label {
-      width: 100px;
-      flex-shrink: 0;
+    .left-column {
+      flex: 1;
+      max-width: 250px;
+      margin-right: 20px;
     }
-
-    .dom input[type="number"] {
-      width: 60px;
-    }
-
-    .dom button {
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    .resultado {
-      min-width: 80px;
-      font-weight: bold;
-    }
-
-    .status-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .status {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .status input {
-      width: 48%;
-    }
-
-    .invocacoes {
+    .right-column {
+      flex: 3;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
-
-    .invocacoes textarea {
-      width: 100%;
-      height: 150px;
+    .photo-upload {
+      text-align: center;
+      margin-bottom: 20px;
     }
-
-    #preview {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
+    .photo-upload img {
+      max-width: 100%;
+      height: auto;
+    }
+    input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 5px;
+      margin-bottom: 5px;
+    }
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    .section {
+      background: #fff;
+      padding: 15px;
       border-radius: 8px;
-      border: 2px solid #ccc;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+    .two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+    .donos, .status {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .status {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .label-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .sub-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+    }
+    .sub-labels input {
+      width: 100%;
+    }
+    .save-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      align-self: flex-start;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Ficha de RPG Digital</h1>
-
-    <img id="preview" src="" alt="Imagem do personagem" style="display:none;">
-
-    <div class="section">
-      <h2>Imagem do Personagem</h2>
-      <input type="file" accept="image/*" id="imagemPersonagem">
-    </div>
-
-    <div class="section grid">
-      <div>
-        <label for="nomePersonagem">Nome do Personagem</label>
-        <input type="text" id="nomePersonagem">
-      </div>
-      <div>
-        <label for="nomeJogador">Nome do Jogador</label>
-        <input type="text" id="nomeJogador">
-      </div>
-      <div>
-        <label for="titulo">Título</label>
-        <input type="text" id="titulo">
+    <div class="left-column">
+      <div class="photo-upload section">
+        <input type="file" accept="image/*" onchange="loadPhoto(event)">
+        <img id="character-photo" src="" alt="Foto do Personagem">
       </div>
     </div>
 
-    <div class="section grid">
-      <div>
-        <label for="cartaAstucia">Carta Astúcia</label>
-        <textarea id="cartaAstucia" rows="2"></textarea>
+    <div class="right-column">
+      <div class="section">
+        <input id="nome-personagem" type="text" placeholder="Nome do Personagem">
+        <input id="nome-jogador" type="text" placeholder="Nome do Jogador">
+        <input id="titulo" type="text" placeholder="Título">
       </div>
-      <div>
-        <label for="cartaOrigem">Carta Origem</label>
-        <textarea id="cartaOrigem" rows="2"></textarea>
-      </div>
-    </div>
 
-    <div class="section">
-      <h2>Dons</h2>
-      <div class="dom-container">
-        <!-- DOM Template -->
-        <div class="dom" data-dom="Equilíbrio">
+      <div class="section grid two-col">
+        <input id="carta-astucia" type="text" placeholder="Carta Astúcia">
+        <input id="carta-origem" type="text" placeholder="Carta Origem">
+      </div>
+
+      <div class="section grid donos">
+        <div class="label-group">
           <label>Equilíbrio</label>
-          <input type="number" class="atual" min="0" max="6" value="3">
-          
-          <input type="number" class="maximo" min="0" max="6" value="6">
-          <button onclick="rolarDado(this)">Rolar</button>
-          <div class="resultado"></div>
+          <div class="sub-labels">
+            <input id="equilibrio-atual" type="number" placeholder="Atual">
+            <input id="equilibrio-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="dom" data-dom="Corpo">
+        <div class="label-group">
           <label>Corpo</label>
-          <input type="number" class="atual" min="0" max="6" value="3">
-          <input type="number" class="maximo" min="0" max="6" value="6">
-          <button onclick="rolarDado(this)">Rolar</button>
-          <div class="resultado"></div>
+          <div class="sub-labels">
+            <input id="corpo-atual" type="number" placeholder="Atual">
+            <input id="corpo-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="dom" data-dom="Mente">
+        <div class="label-group">
           <label>Mente</label>
-          <input type="number" class="atual" min="0" max="6" value="3">
-          <input type="number" class="maximo" min="0" max="6" value="6">
-          <button onclick="rolarDado(this)">Rolar</button>
-          <div class="resultado"></div>
+          <div class="sub-labels">
+            <input id="mente-atual" type="number" placeholder="Atual">
+            <input id="mente-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="dom" data-dom="Alma">
+        <div class="label-group">
           <label>Alma</label>
-          <input type="number" class="atual" min="0" max="6" value="3">
-          <input type="number" class="maximo" min="0" max="6" value="6">
-          <button onclick="rolarDado(this)">>Rolar</button>
-          <div class="resultado"></div>
+          <div class="sub-labels">
+            <input id="alma-atual" type="number" placeholder="Atual">
+            <input id="alma-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="dom" data-dom="Sentimentos">
+        <div class="label-group">
           <label>Sentimentos</label>
-          <input type="number" class="atual" min="0" max="6" value="3">
-          <input type="number" class="maximo" min="0" max="6" value="6">
-          <button onclick="rolarDado(this)">Rolar</button>
-          <div class="resultado"></div>
+          <div class="sub-labels">
+            <input id="sentimentos-atual" type="number" placeholder="Atual">
+            <input id="sentimentos-max" type="number" placeholder="Máx">
+          </div>
         </div>
       </div>
-    </div>
-<h2>📜 Log de Rolagens</h2>
-<div id="log">
-  Nenhuma rolagem ainda.
-</div>
 
-<!-- Som de dado -->
-<audio id="somDado" src="dado.mp3" preload="auto"></audio>
-
-    <div class="section">
-      <h2>Status</h2>
-      <div class="status-container">
-        <div class="status">
+      <div class="section grid status">
+        <div class="label-group">
           <label>Vitalidade</label>
-          <input type="number" placeholder="Atual">
-          <input type="number" placeholder="Máximo">
+          <div class="sub-labels">
+            <input id="vitalidade-atual" type="number" placeholder="Atual">
+            <input id="vitalidade-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="status">
+        <div class="label-group">
           <label>Mentalidade</label>
-          <input type="number" placeholder="Atual">
-          <input type="number" placeholder="Máximo">
+          <div class="sub-labels">
+            <input id="mentalidade-atual" type="number" placeholder="Atual">
+            <input id="mentalidade-max" type="number" placeholder="Máx">
+          </div>
         </div>
-        <div class="status">
+        <div class="label-group">
           <label>Armadura</label>
-          <input type="number" placeholder="Atual">
-          <input type="number" placeholder="Máximo">
+          <div class="sub-labels">
+            <input id="armadura-atual" type="number" placeholder="Atual">
+            <input id="armadura-max" type="number" placeholder="Máx">
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="section">
-      <h2>Inventário</h2>
-      <textarea rows="4" placeholder="Adicione aqui os itens do seu inventário..."></textarea>
-    </div>
+      <div class="section">
+        <label>Inventário</label>
+        <textarea id="inventario"></textarea>
+      </div>
 
-    <div class="section">
-      <h2>Habilidades</h2>
-      <textarea rows="4" placeholder="Adicione aqui as habilidades do seu personagem..."></textarea>
-    </div>
+      <div class="section">
+        <label>Habilidades</label>
+        <textarea id="habilidades"></textarea>
+      </div>
 
-    <div class="section">
-      <h2>Invocações</h2>
-      <div class="invocacoes">
-        <div>
-          <label for="arcanas">Arcanas</label>
-          <textarea id="arcanas" placeholder="Invocações Arcanas..."></textarea>
-        </div>
-        <div>
-          <label for="divinas">Divinas</label>
-          <textarea id="divinas" placeholder="Invocações Divinas..."></textarea>
+      <div class="section">
+        <label>Invocações</label>
+        <div class="grid two-col">
+          <div>
+            <label>Arcanas</label>
+            <textarea id="invocacoes-arcanas"></textarea>
+          </div>
+          <div>
+            <label>Divinas</label>
+            <textarea id="invocacoes-divinas"></textarea>
+          </div>
         </div>
       </div>
+
+      <button class="save-button" onclick="salvarFicha()">Salvar Ficha</button>
     </div>
   </div>
-<script>
-  // Mostrar imagem do personagem
-  const inputImagem = document.getElementById("imagemPersonagem");
-  const preview = document.getElementById("preview");
-
-  inputImagem.addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  // Função para rolar o dado com regras de bônus/malus
-  function rolarDado(botao) {
-    const domContainer = botao.closest(".dom");
-    const nomeDom = domContainer.getAttribute("data-dom");
-    const inputAtual = domContainer.querySelector(".atual");
-    const resultadoDiv = domContainer.querySelector(".resultado");
-
-    let atual = parseInt(inputAtual.value);
-    let rolagem = Math.floor(Math.random() * 8) + 1; // 1d8
-    let modificador = 0;
-    let resultadoFinal = rolagem;
-
-    if (atual === 0) {
-      alert(`${nomeDom} está com 0 pontos. Você receberá -2 de penalidade na rolagem.`);
-      modificador = -2;
-    } else {
-      const usarPonto = confirm(`Você quer gastar 1 ponto de ${nomeDom}?`);
-      if (usarPonto) {
-        modificador = 2;
-        atual -= 1;
-        inputAtual.value = atual;
-      }
-    }
-
-    resultadoFinal = rolagem + modificador;
-
-    resultadoDiv.textContent = `Rolagem: ${rolagem} ${modificador !== 0 ? (modificador > 0 ? `+${modificador}` : `${modificador}`) : ''} = ${resultadoFinal}`;
-  }
-</script>
 
   <script>
-    // Mostrar imagem do personagem
-    const inputImagem = document.getElementById("imagemPersonagem");
-    const
-
-<button onclick="salvarFicha()">Salvar Ficha</button>
-<p id="linkFicha"></p>
-
-<script>
-  async function salvarFicha() {
-    const dadosFicha = {
-      nomePersonagem: document.getElementById('nomePersonagem').value,
-      nomeJogador: document.getElementById('nomeJogador').value,
-      titulo: document.getElementById('titulo').value,
-      cartaAstucia: document.getElementById('cartaAstucia').value,
-      cartaOrigem: document.getElementById('cartaOrigem').value,
-      dons: {
-        equilibrio: { atual: 3, max: 5 }, // coloque valores reais
-        corpo: { atual: 2, max: 4 },
-        mente: { atual: 4, max: 5 },
-        alma: { atual: 2, max: 4 },
-        sentimentos: { atual: 3, max: 4 }
-      },
-      status: {
-        vitalidade: { atual: 10, max: 10 },
-        mentalidade: { atual: 8, max: 10 },
-        armadura: { atual: 1, max: 3 }
-      },
-      inventario: ["Espada", "Poção"],
-      habilidades: ["Ataque Rápido"],
-      invocacoes: {
-        arcanas: ["Raio Arcano"],
-        divinas: ["Escudo da Fé"]
+    function loadPhoto(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('character-photo').src = reader.result;
       }
-    };
+      reader.readAsDataURL(event.target.files[0]);
+    }
 
-    const res = await fetch('/salvar-ficha', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dadosFicha)
-    });
+    function salvarFicha() {
+      const ficha = {
+        nomePersonagem: document.getElementById('nome-personagem').value,
+        nomeJogador: document.getElementById('nome-jogador').value,
+        titulo: document.getElementById('titulo').value,
+        cartaAstucia: document.getElementById('carta-astucia').value,
+        cartaOrigem: document.getElementById('carta-origem').value,
+        dons: {
+          equilibrio: [document.getElementById('equilibrio-atual').value, document.getElementById('equilibrio-max').value],
+          corpo: [document.getElementById('corpo-atual').value, document.getElementById('corpo-max').value],
+          mente: [document.getElementById('mente-atual').value, document.getElementById('mente-max').value],
+          alma: [document.getElementById('alma-atual').value, document.getElementById('alma-max').value],
+          sentimentos: [document.getElementById('sentimentos-atual').value, document.getElementById('sentimentos-max').value],
+        },
+        status: {
+          vitalidade: [document.getElementById('vitalidade-atual').value, document.getElementById('vitalidade-max').value],
+          mentalidade: [document.getElementById('mentalidade-atual').value, document.getElementById('mentalidade-max').value],
+          armadura: [document.getElementById('armadura-atual').value, document.getElementById('armadura-max').value],
+        },
+        inventario: document.getElementById('inventario').value,
+        habilidades: document.getElementById('habilidades').value,
+        invocacoes: {
+          arcanas: document.getElementById('invocacoes-arcanas').value,
+          divinas: document.getElementById('invocacoes-divinas').value,
+        }
+      };
 
-    const data = await res.json();
-    document.getElementById('linkFicha').innerHTML = `
-      <strong>Ficha salva!</strong> Acesse: <a href="${data.url}" target="_blank">${data.url}</a>
-    `;
-  }
-</script>
+      const nomeId = ficha.nomePersonagem.trim().toLowerCase().replace(/\s+/g, '-');
+      const blob = new Blob([JSON.stringify(ficha, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${nomeId}.json`;
+      a.click();
+
+      setTimeout(() => {
+        window.location.href = `/ficha/${nomeId}`;
+      }, 500);
+    }
+  </script>
+</body>
+</html>
