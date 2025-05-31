@@ -206,8 +206,8 @@
       reader.readAsDataURL(event.target.files[0]);
     }
 
-    function salvarFicha() {
-      const ficha = {
+    function getFichaData() {
+      return {
         nomePersonagem: document.getElementById('nome-personagem').value,
         nomeJogador: document.getElementById('nome-jogador').value,
         titulo: document.getElementById('titulo').value,
@@ -232,65 +232,83 @@
           divinas: document.getElementById('invocacoes-divinas').value,
         }
       };
+    }
 
+    function salvarFicha(callback) {
+      const ficha = getFichaData();
       const nomeId = ficha.nomePersonagem.trim().toLowerCase().replace(/\s+/g, '-');
 
-      fetch('https://mortandade-ficha.onrender.com/api/fichas', {
-        method: 'POST',
+      fetch(`https://mortandade-ficha.onrender.com/api/fichas/${nomeId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(ficha)
       })
       .then(response => {
-        if (response.ok) {
+        if (!callback && response.ok) {
           window.location.href = `/ficha/${nomeId}`;
-        } else {
-          alert('Erro ao salvar ficha na nuvem.');
+        } else if (callback) {
+          callback(response.ok);
         }
       })
       .catch(error => {
         console.error('Erro na requisição:', error);
-        alert('Erro ao salvar ficha.');
+        if (callback) callback(false);
+      });
+    }
+
+    function configurarAutoSalvamento() {
+      const campos = document.querySelectorAll('input, textarea');
+      campos.forEach(campo => {
+        campo.addEventListener('input', () => {
+          clearTimeout(campo.dataset.timeout);
+          campo.dataset.timeout = setTimeout(() => salvarFicha(), 1000);
+        });
       });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      configurarAutoSalvamento();
+
       const match = window.location.pathname.match(/\/ficha\/(.+)$/);
       if (match) {
         const nomeId = match[1];
-        const data = localStorage.getItem(`ficha-${nomeId}`);
-        if (data) {
-          const ficha = JSON.parse(data);
-          document.getElementById('nome-personagem').value = ficha.nomePersonagem || "";
-          document.getElementById('nome-jogador').value = ficha.nomeJogador || "";
-          document.getElementById('titulo').value = ficha.titulo || "";
-          document.getElementById('carta-astucia').value = ficha.cartaAstucia || "";
-          document.getElementById('carta-origem').value = ficha.cartaOrigem || "";
+        fetch(`https://mortandade-ficha.onrender.com/api/fichas/${nomeId}`)
+          .then(response => response.json())
+          .then(ficha => {
+            if (!ficha || ficha.erro) return;
 
-          document.getElementById('equilibrio-atual').value = ficha.dons.equilibrio[0] || "";
-          document.getElementById('equilibrio-max').value = ficha.dons.equilibrio[1] || "";
-          document.getElementById('corpo-atual').value = ficha.dons.corpo[0] || "";
-          document.getElementById('corpo-max').value = ficha.dons.corpo[1] || "";
-          document.getElementById('mente-atual').value = ficha.dons.mente[0] || "";
-          document.getElementById('mente-max').value = ficha.dons.mente[1] || "";
-          document.getElementById('alma-atual').value = ficha.dons.alma[0] || "";
-          document.getElementById('alma-max').value = ficha.dons.alma[1] || "";
-          document.getElementById('sentimentos-atual').value = ficha.dons.sentimentos[0] || "";
-          document.getElementById('sentimentos-max').value = ficha.dons.sentimentos[1] || "";
+            document.getElementById('nome-personagem').value = ficha.nomePersonagem || "";
+            document.getElementById('nome-jogador').value = ficha.nomeJogador || "";
+            document.getElementById('titulo').value = ficha.titulo || "";
+            document.getElementById('carta-astucia').value = ficha.cartaAstucia || "";
+            document.getElementById('carta-origem').value = ficha.cartaOrigem || "";
 
-          document.getElementById('vitalidade-atual').value = ficha.status.vitalidade[0] || "";
-          document.getElementById('vitalidade-max').value = ficha.status.vitalidade[1] || "";
-          document.getElementById('mentalidade-atual').value = ficha.status.mentalidade[0] || "";
-          document.getElementById('mentalidade-max').value = ficha.status.mentalidade[1] || "";
-          document.getElementById('armadura-atual').value = ficha.status.armadura[0] || "";
-          document.getElementById('armadura-max').value = ficha.status.armadura[1] || "";
+            document.getElementById('equilibrio-atual').value = ficha.dons.equilibrio[0] || "";
+            document.getElementById('equilibrio-max').value = ficha.dons.equilibrio[1] || "";
+            document.getElementById('corpo-atual').value = ficha.dons.corpo[0] || "";
+            document.getElementById('corpo-max').value = ficha.dons.corpo[1] || "";
+            document.getElementById('mente-atual').value = ficha.dons.mente[0] || "";
+            document.getElementById('mente-max').value = ficha.dons.mente[1] || "";
+            document.getElementById('alma-atual').value = ficha.dons.alma[0] || "";
+            document.getElementById('alma-max').value = ficha.dons.alma[1] || "";
+            document.getElementById('sentimentos-atual').value = ficha.dons.sentimentos[0] || "";
+            document.getElementById('sentimentos-max').value = ficha.dons.sentimentos[1] || "";
 
-          document.getElementById('inventario').value = ficha.inventario || "";
-          document.getElementById('habilidades').value = ficha.habilidades || "";
-          document.getElementById('invocacoes-arcanas').value = ficha.invocacoes.arcanas || "";
-          document.getElementById('invocacoes-divinas').value = ficha.invocacoes.divinas || "";
-        }
+            document.getElementById('vitalidade-atual').value = ficha.status.vitalidade[0] || "";
+            document.getElementById('vitalidade-max').value = ficha.status.vitalidade[1] || "";
+            document.getElementById('mentalidade-atual').value = ficha.status.mentalidade[0] || "";
+            document.getElementById('mentalidade-max').value = ficha.status.mentalidade[1] || "";
+            document.getElementById('armadura-atual').value = ficha.status.armadura[0] || "";
+            document.getElementById('armadura-max').value = ficha.status.armadura[1] || "";
+
+            document.getElementById('inventario').value = ficha.inventario || "";
+            document.getElementById('habilidades').value = ficha.habilidades || "";
+            document.getElementById('invocacoes-arcanas').value = ficha.invocacoes.arcanas || "";
+            document.getElementById('invocacoes-divinas').value = ficha.invocacoes.divinas || "";
+          })
+          .catch(err => console.error("Erro ao carregar ficha:", err));
       }
     });
   </script>
