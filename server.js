@@ -66,4 +66,9 @@ app.get('/api/:idPublico', async (req, res) => {
 
 // Página visual da ficha
 app.get('/:idPublico', (req, res) => {
-  res.sendFile(path
+  res.sendFile(path.join(__dirname, 'public', 'ficha.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
