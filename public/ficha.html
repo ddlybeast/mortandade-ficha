@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha de RPG</title>
+</head>
+<body>
+  <h1 id="nome"></h1>
+  <p><strong>Jogador:</strong> <span id="jogador"></span></p>
+  <p><strong>Título:</strong> <span id="titulo"></span></p>
+  <p><strong>Carta Astúcia:</strong> <span id="astucia"></span></p>
+  <p><strong>Carta Origem:</strong> <span id="origem"></span></p>
+
+  <script>
+    const idPublico = window.location.pathname.replace('/', '');
+
+    fetch(`/api/${idPublico}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('nome').textContent = data.nomePersonagem;
+        document.getElementById('jogador').textContent = data.nomeJogador;
+        document.getElementById('titulo').textContent = data.titulo;
+        document.getElementById('astucia').textContent = data.cartaAstucia;
+        document.getElementById('origem').textContent = data.cartaOrigem;
+      })
+      .catch(() => {
+        document.body.innerHTML = '<h1>Ficha não encontrada</h1>';
+      });
+  </script>
+</body>
+</html>
