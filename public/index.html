@@ -234,18 +234,25 @@
       };
 
       const nomeId = ficha.nomePersonagem.trim().toLowerCase().replace(/\s+/g, '-');
-      localStorage.setItem(`ficha-${nomeId}`, JSON.stringify(ficha));
 
-      const blob = new Blob([JSON.stringify(ficha, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${nomeId}.json`;
-      a.click();
-
-      setTimeout(() => {
-        window.location.href = `/ficha/${nomeId}`;
-      }, 500);
+      fetch('https://mortandade-ficha.onrender.com/api/fichas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(ficha)
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = `/ficha/${nomeId}`;
+        } else {
+          alert('Erro ao salvar ficha na nuvem.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Erro ao salvar ficha.');
+      });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
