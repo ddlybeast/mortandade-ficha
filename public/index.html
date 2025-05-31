@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ficha de RPG</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    h1, h2 {
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .dom-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dom {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dom label {
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .dom input[type="number"] {
+      width: 60px;
+    }
+
+    .dom button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .resultado {
+      min-width: 80px;
+      font-weight: bold;
+    }
+
+    .status-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .status {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .status input {
+      width: 48%;
+    }
+
+    .invocacoes {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .invocacoes textarea {
+      width: 100%;
+      height: 150px;
+    }
+
+    #preview {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ficha de RPG Digital</h1>
+
+    <img id="preview" src="" alt="Imagem do personagem" style="display:none;">
+
+    <div class="section">
+      <h2>Imagem do Personagem</h2>
+      <input type="file" accept="image/*" id="imagemPersonagem">
+    </div>
+
+    <div class="section grid">
+      <div>
+        <label for="nomePersonagem">Nome do Personagem</label>
+        <input type="text" id="nomePersonagem">
+      </div>
+      <div>
+        <label for="nomeJogador">Nome do Jogador</label>
+        <input type="text" id="nomeJogador">
+      </div>
+      <div>
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo">
+      </div>
+    </div>
+
+    <div class="section grid">
+      <div>
+        <label for="cartaAstucia">Carta Astúcia</label>
+        <textarea id="cartaAstucia" rows="2"></textarea>
+      </div>
+      <div>
+        <label for="cartaOrigem">Carta Origem</label>
+        <textarea id="cartaOrigem" rows="2"></textarea>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Dons</h2>
+      <div class="dom-container">
+        <!-- DOM Template -->
+        <div class="dom" data-dom="Equilíbrio">
+          <label>Equilíbrio</label>
+          <input type="number" class="atual" min="0" max="6" value="3">
+          
+          <input type="number" class="maximo" min="0" max="6" value="6">
+          <button onclick="rolarDado(this)">Rolar</button>
+          <div class="resultado"></div>
+        </div>
+        <div class="dom" data-dom="Corpo">
+          <label>Corpo</label>
+          <input type="number" class="atual" min="0" max="6" value="3">
+          <input type="number" class="maximo" min="0" max="6" value="6">
+          <button onclick="rolarDado(this)">Rolar</button>
+          <div class="resultado"></div>
+        </div>
+        <div class="dom" data-dom="Mente">
+          <label>Mente</label>
+          <input type="number" class="atual" min="0" max="6" value="3">
+          <input type="number" class="maximo" min="0" max="6" value="6">
+          <button onclick="rolarDado(this)">Rolar</button>
+          <div class="resultado"></div>
+        </div>
+        <div class="dom" data-dom="Alma">
+          <label>Alma</label>
+          <input type="number" class="atual" min="0" max="6" value="3">
+          <input type="number" class="maximo" min="0" max="6" value="6">
+          <button onclick="rolarDado(this)">>Rolar</button>
+          <div class="resultado"></div>
+        </div>
+        <div class="dom" data-dom="Sentimentos">
+          <label>Sentimentos</label>
+          <input type="number" class="atual" min="0" max="6" value="3">
+          <input type="number" class="maximo" min="0" max="6" value="6">
+          <button onclick="rolarDado(this)">Rolar</button>
+          <div class="resultado"></div>
+        </div>
+      </div>
+    </div>
+<h2>📜 Log de Rolagens</h2>
+<div id="log">
+  Nenhuma rolagem ainda.
+</div>
+
+<!-- Som de dado -->
+<audio id="somDado" src="dado.mp3" preload="auto"></audio>
+
+    <div class="section">
+      <h2>Status</h2>
+      <div class="status-container">
+        <div class="status">
+          <label>Vitalidade</label>
+          <input type="number" placeholder="Atual">
+          <input type="number" placeholder="Máximo">
+        </div>
+        <div class="status">
+          <label>Mentalidade</label>
+          <input type="number" placeholder="Atual">
+          <input type="number" placeholder="Máximo">
+        </div>
+        <div class="status">
+          <label>Armadura</label>
+          <input type="number" placeholder="Atual">
+          <input type="number" placeholder="Máximo">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Inventário</h2>
+      <textarea rows="4" placeholder="Adicione aqui os itens do seu inventário..."></textarea>
+    </div>
+
+    <div class="section">
+      <h2>Habilidades</h2>
+      <textarea rows="4" placeholder="Adicione aqui as habilidades do seu personagem..."></textarea>
+    </div>
+
+    <div class="section">
+      <h2>Invocações</h2>
+      <div class="invocacoes">
+        <div>
+          <label for="arcanas">Arcanas</label>
+          <textarea id="arcanas" placeholder="Invocações Arcanas..."></textarea>
+        </div>
+        <div>
+          <label for="divinas">Divinas</label>
+          <textarea id="divinas" placeholder="Invocações Divinas..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+  // Mostrar imagem do personagem
+  const inputImagem = document.getElementById("imagemPersonagem");
+  const preview = document.getElementById("preview");
+
+  inputImagem.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Função para rolar o dado com regras de bônus/malus
+  function rolarDado(botao) {
+    const domContainer = botao.closest(".dom");
+    const nomeDom = domContainer.getAttribute("data-dom");
+    const inputAtual = domContainer.querySelector(".atual");
+    const resultadoDiv = domContainer.querySelector(".resultado");
+
+    let atual = parseInt(inputAtual.value);
+    let rolagem = Math.floor(Math.random() * 8) + 1; // 1d8
+    let modificador = 0;
+    let resultadoFinal = rolagem;
+
+    if (atual === 0) {
+      alert(`${nomeDom} está com 0 pontos. Você receberá -2 de penalidade na rolagem.`);
+      modificador = -2;
+    } else {
+      const usarPonto = confirm(`Você quer gastar 1 ponto de ${nomeDom}?`);
+      if (usarPonto) {
+        modificador = 2;
+        atual -= 1;
+        inputAtual.value = atual;
+      }
+    }
+
+    resultadoFinal = rolagem + modificador;
+
+    resultadoDiv.textContent = `Rolagem: ${rolagem} ${modificador !== 0 ? (modificador > 0 ? `+${modificador}` : `${modificador}`) : ''} = ${resultadoFinal}`;
+  }
+</script>
+
+  <script>
+    // Mostrar imagem do personagem
+    const inputImagem = document.getElementById("imagemPersonagem");
+    const
