@@ -234,9 +234,10 @@
       };
 
       const nomeId = ficha.nomePersonagem.trim().toLowerCase().replace(/\s+/g, '-');
+      localStorage.setItem(`ficha-${nomeId}`, JSON.stringify(ficha));
+
       const blob = new Blob([JSON.stringify(ficha, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-
       const a = document.createElement('a');
       a.href = url;
       a.download = `${nomeId}.json`;
@@ -246,6 +247,45 @@
         window.location.href = `/ficha/${nomeId}`;
       }, 500);
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const match = window.location.pathname.match(/\/ficha\/(.+)$/);
+      if (match) {
+        const nomeId = match[1];
+        const data = localStorage.getItem(`ficha-${nomeId}`);
+        if (data) {
+          const ficha = JSON.parse(data);
+          document.getElementById('nome-personagem').value = ficha.nomePersonagem || "";
+          document.getElementById('nome-jogador').value = ficha.nomeJogador || "";
+          document.getElementById('titulo').value = ficha.titulo || "";
+          document.getElementById('carta-astucia').value = ficha.cartaAstucia || "";
+          document.getElementById('carta-origem').value = ficha.cartaOrigem || "";
+
+          document.getElementById('equilibrio-atual').value = ficha.dons.equilibrio[0] || "";
+          document.getElementById('equilibrio-max').value = ficha.dons.equilibrio[1] || "";
+          document.getElementById('corpo-atual').value = ficha.dons.corpo[0] || "";
+          document.getElementById('corpo-max').value = ficha.dons.corpo[1] || "";
+          document.getElementById('mente-atual').value = ficha.dons.mente[0] || "";
+          document.getElementById('mente-max').value = ficha.dons.mente[1] || "";
+          document.getElementById('alma-atual').value = ficha.dons.alma[0] || "";
+          document.getElementById('alma-max').value = ficha.dons.alma[1] || "";
+          document.getElementById('sentimentos-atual').value = ficha.dons.sentimentos[0] || "";
+          document.getElementById('sentimentos-max').value = ficha.dons.sentimentos[1] || "";
+
+          document.getElementById('vitalidade-atual').value = ficha.status.vitalidade[0] || "";
+          document.getElementById('vitalidade-max').value = ficha.status.vitalidade[1] || "";
+          document.getElementById('mentalidade-atual').value = ficha.status.mentalidade[0] || "";
+          document.getElementById('mentalidade-max').value = ficha.status.mentalidade[1] || "";
+          document.getElementById('armadura-atual').value = ficha.status.armadura[0] || "";
+          document.getElementById('armadura-max').value = ficha.status.armadura[1] || "";
+
+          document.getElementById('inventario').value = ficha.inventario || "";
+          document.getElementById('habilidades').value = ficha.habilidades || "";
+          document.getElementById('invocacoes-arcanas').value = ficha.invocacoes.arcanas || "";
+          document.getElementById('invocacoes-divinas').value = ficha.invocacoes.divinas || "";
+        }
+      }
+    });
   </script>
 </body>
 </html>
